@@ -14,10 +14,12 @@ provide-module surround %{
         while test $# -ge 2; do
           opening=$1 closing=$2
           shift 2
-          # Let’s just pretend surrounding pairs can’t be cats [🐈🐱].
+          kak_quoted_opening=$(kak_escape "$opening")
+          kak_quoted_closing=$(kak_escape "$closing")
+          kak_quoted_opening_regex=$(kak_escape "\\Q$opening\\E")
           echo "
-            hook -group surround window InsertChar %🐈\\Q$opening\\E🐈 %🐱surround-opening-inserted %🐈$opening🐈 %🐈$closing🐈🐱
-            hook -group surround window InsertDelete %🐈\\Q$opening\\E🐈 %🐱surround-opening-deleted %🐈$opening🐈 %🐈$closing🐈🐱
+            hook -group surround window InsertChar $kak_quoted_opening_regex %(surround-opening-inserted $kak_quoted_opening $kak_quoted_closing)
+            hook -group surround window InsertDelete $kak_quoted_opening_regex %(surround-opening-deleted $kak_quoted_opening $kak_quoted_closing)
           "
         done
       }
@@ -29,7 +31,16 @@ provide-module surround %{
           regex="$regex|(\\A\\Q$opening\\E.+\\Q$closing\\E\\z)"
         done
         regex=${regex#|}
-        printf 'set-option window surround_pairs_to_regex %s\n' "$regex"
+        kak_quoted_regex=$(kak_escape "$regex")
+        printf 'set-option window surround_pairs_to_regex %s\n' "$kak_quoted_regex"
+      }
+      kak_escape() {
+        for argument do
+          printf "'"
+          printf '%s' "$argument" | sed "s/'/''/g"
+          printf "'"
+          printf ' '
+        done
       }
       main "$@"
     }
