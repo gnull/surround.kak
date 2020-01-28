@@ -1,6 +1,8 @@
 provide-module surround %{
   declare-option -docstring 'List of surrounding pairs' str-list surround_pairs ( ) { } [ ] < > '"' '"' "'" "'" ` ` “ ” ‘ ’ « » ‹ ›
   declare-option -hidden str surround_pairs_to_regex
+  declare-option -docstring 'Commands to execute when entering surround mode' str-list surround_begin
+  declare-option -docstring 'Commands to execute when leaving surround mode' str-list surround_end
   define-command surround -params .. -docstring 'Enter surround mode for the whole insert session' %{
     evaluate-commands %sh{
       # Generate hooks for inserting and deleting an opening pair.
@@ -49,7 +51,9 @@ provide-module surround %{
     # Enter surround mode for the whole insert session.
     hook -once window ModeChange 'pop:insert:.*' %{
       remove-hooks window surround
+      evaluate-commands %opt{surround_end}
     }
+    evaluate-commands %opt{surround_begin}
     execute-keys -with-hooks i
   }
   # ╭───────────────────────────────────╮

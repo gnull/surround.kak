@@ -17,6 +17,10 @@ surround `*words*`.
 ``` kak
 map global user s ': surround<ret>' -docstring 'Enter surround mode'
 map global user S ': surround _ _ * *<ret>' -docstring 'Enter surround mode with extra surrounding pairs'
+
+# Optional
+set-option global surround_begin auto-pairs-disable
+set-option global surround_end auto-pairs-enable
 ```
 
 ## Surrounding pairs
