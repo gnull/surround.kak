@@ -41,7 +41,8 @@ Double angle quotation mark: « »
 Single angle quotation mark: ‹ ›
 ```
 
-See also [auto-pairs.kak].
+See also [auto-pairs.kak] and [manual-indent.kak].
 
 [Kakoune]: https://kakoune.org
 [auto-pairs.kak]: https://github.com/alexherbo2/auto-pairs.kak
+[manual-indent.kak]: https://github.com/alexherbo2/manual-indent.kak
