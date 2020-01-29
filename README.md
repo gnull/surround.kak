@@ -41,4 +41,7 @@ Double angle quotation mark: « »
 Single angle quotation mark: ‹ ›
 ```
 
+See also [auto-pairs.kak].
+
 [Kakoune]: https://kakoune.org
+[auto-pairs.kak]: https://github.com/alexherbo2/auto-pairs.kak
