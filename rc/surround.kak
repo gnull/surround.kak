@@ -4,9 +4,23 @@ provide-module surround %{
   declare-option -docstring 'Commands to execute when entering surround mode' str-list surround_begin ''
   declare-option -docstring 'Commands to execute when leaving surround mode' str-list surround_end ''
   define-command surround -params .. -docstring 'Enter surround mode for the whole insert session' %{
+    surround-set-option %arg{@}
+    hook -group surround window InsertChar ' ' surround-space-inserted-or-deleted
+    hook -group surround window InsertDelete ' ' surround-space-inserted-or-deleted
+    # Enter surround mode for the whole insert session.
+    hook -once window ModeChange 'pop:insert:.*' %{
+      remove-hooks window 'surround|surround-.+'
+      evaluate-commands %opt{surround_end}
+    }
+    evaluate-commands %opt{surround_begin}
+    execute-keys -with-hooks i
+  }
+  define-command -hidden surround-set-option -params .. %{
+    # Clean hooks
+    remove-hooks window surround-pairs
+    # Generate hooks for surrounding pairs.
+    # Build regex for matching a surrounding pair.
     evaluate-commands %sh{
-      # Generate hooks for inserting and deleting an opening pair.
-      # Build surround_pairs_to_regex for matching a surrounding pair, that is used when inserting or deleting a space.
       main() {
         eval "set -- $kak_quoted_opt_surround_pairs \"\$@\""
         build_hooks "$@"
@@ -18,8 +32,8 @@ provide-module surround %{
           shift 2
           # Let’s just pretend surrounding pairs can’t be cats [🐈🐱].
           echo "
-            hook -group surround window InsertChar %🐈\\Q$opening\\E🐈 %🐱surround-opening-inserted %🐈$opening🐈 %🐈$closing🐈🐱
-            hook -group surround window InsertDelete %🐈\\Q$opening\\E🐈 %🐱surround-opening-deleted %🐈$opening🐈 %🐈$closing🐈🐱
+            hook -group surround-pairs window InsertChar %🐈\\Q$opening\\E🐈 %🐱surround-opening-inserted %🐈$opening🐈 %🐈$closing🐈🐱
+            hook -group surround-pairs window InsertDelete %🐈\\Q$opening\\E🐈 %🐱surround-opening-deleted %🐈$opening🐈 %🐈$closing🐈🐱
           "
         done
       }
@@ -33,27 +47,8 @@ provide-module surround %{
         regex=${regex#|}
         printf 'set-option window surround_pairs_to_regex %s\n' "$regex"
       }
-      # For reference:
-      # Usage: kak_quoted_something=$(kak_escape "$something")
-      # kak_escape() {
-      #   for argument do
-      #     printf "'"
-      #     printf '%s' "$argument" | sed "s/'/''/g"
-      #     printf "'"
-      #     printf ' '
-      #   done
-      # }
       main "$@"
     }
-    hook -group surround window InsertChar ' ' surround-space-inserted-or-deleted
-    hook -group surround window InsertDelete ' ' surround-space-inserted-or-deleted
-    # Enter surround mode for the whole insert session.
-    hook -once window ModeChange 'pop:insert:.*' %{
-      remove-hooks window surround
-      evaluate-commands %opt{surround_end}
-    }
-    evaluate-commands %opt{surround_begin}
-    execute-keys -with-hooks i
   }
   # ╭───────────────────────────────────╮
   # │ What ┊ Initial ┊ Insert ┊ Result  │
