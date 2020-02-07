@@ -31,10 +31,12 @@ provide-module surround %{
           opening=$1 closing=$2
           shift 2
           # Let’s just pretend surrounding pairs can’t be cats [🐈🐱].
-          echo "
-            hook -group surround-pairs window InsertChar %🐈\\Q$opening\\E🐈 %🐱surround-opening-inserted %🐈$opening🐈 %🐈$closing🐈🐱
-            hook -group surround-pairs window InsertDelete %🐈\\Q$opening\\E🐈 %🐱surround-opening-deleted %🐈$opening🐈 %🐈$closing🐈🐱
-          "
+          printf '
+            hook -group surround-pairs window InsertChar %%🐈\\Q%s\\E🐈 %%🐱surround-opening-inserted %%🐈%s🐈 %%🐈%s🐈🐱
+            hook -group surround-pairs window InsertDelete %%🐈\\Q%s\\E🐈 %%🐱surround-opening-deleted %%🐈%s🐈 %%🐈%s🐈🐱
+          ' \
+            "$opening" "$opening" "$closing" \
+            "$opening" "$opening" "$closing"
         done
       }
       build_regex() {
