@@ -21,35 +21,24 @@ provide-module surround %{
     # Generate hooks for surrounding pairs.
     # Build regex for matching a surrounding pair.
     evaluate-commands %sh{
-      main() {
-        eval "set -- $kak_quoted_opt_surround_pairs \"\$@\""
-        build_hooks "$@"
-        build_regex "$@"
-      }
-      build_hooks() {
-        while test $# -ge 2; do
-          opening=$1 closing=$2
-          shift 2
-          # Let’s just pretend surrounding pairs can’t be cats [🐈🐱].
-          printf '
-            hook -group surround-pairs window InsertChar %%🐈\\Q%s\\E🐈 %%🐱surround-opening-inserted %%🐈%s🐈 %%🐈%s🐈🐱
-            hook -group surround-pairs window InsertDelete %%🐈\\Q%s\\E🐈 %%🐱surround-opening-deleted %%🐈%s🐈 %%🐈%s🐈🐱
-          ' \
-            "$opening" "$opening" "$closing" \
-            "$opening" "$opening" "$closing"
-        done
-      }
-      build_regex() {
-        regex=''
-        while test $# -ge 2; do
-          opening=$1 closing=$2
-          shift 2
-          regex="$regex|(\\A\\Q$opening\\E.+\\Q$closing\\E\\z)"
-        done
-        regex=${regex#|}
-        printf 'set-option window surround_pairs_to_regex %s\n' "$regex"
-      }
-      main "$@"
+      eval "set -- $kak_quoted_opt_surround_pairs \"\$@\""
+      # Regex
+      regex=''
+      while test $# -ge 2; do
+        opening=$1 closing=$2
+        shift 2
+        # Let’s just pretend surrounding pairs can’t be cats [🐈🐱].
+        printf '
+          hook -group surround-pairs window InsertChar %%🐈\\Q%s\\E🐈 %%🐱surround-opening-inserted %%🐈%s🐈 %%🐈%s🐈🐱
+          hook -group surround-pairs window InsertDelete %%🐈\\Q%s\\E🐈 %%🐱surround-opening-deleted %%🐈%s🐈 %%🐈%s🐈🐱
+        ' \
+          "$opening" "$opening" "$closing" \
+          "$opening" "$opening" "$closing"
+        regex="$regex|(\\A\\Q$opening\\E.+\\Q$closing\\E\\z)"
+      done
+      # Set regex option
+      regex=${regex#|}
+      printf 'set-option window surround_pairs_to_regex %s\n' "$regex"
     }
   }
   # ╭───────────────────────────────────╮
