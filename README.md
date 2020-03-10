@@ -25,7 +25,7 @@ set-option global surround_end auto-pairs-enable
 
 ## Surrounding pairs
 
-By default, `surround_pairs` includes the following surrounding pairs.
+By default, `surround_pairs` includes the following surrounding pairs:
 
 ```
 Parenthesis block: ( )
