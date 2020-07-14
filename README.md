@@ -8,37 +8,33 @@ Add [`surround.kak`](rc/surround.kak) to your autoload or source it manually.
 
 ## Usage
 
-Enter surround mode with `surround`.  You can pass additional surrounding pairs
-to the command, normally controlled by the `surround_pairs` option.  Useful to
-surround `*words*`.
+- Enter surround mode with `enter-user-mode surround`.
+- Enter insert mode with `surround-enter-insert-mode`.
 
 ## Configuration
 
 ``` kak
-map global user s ': surround<ret>' -docstring 'Enter surround mode'
-map global user S ': surround _ _ * *<ret>' -docstring 'Enter surround mode with extra surrounding pairs'
-
-# Optional
-set-option global surround_begin auto-pairs-disable
-set-option global surround_end auto-pairs-enable
+# Quote
+map global normal "'" ': enter-user-mode surround<ret>'
+map global normal '"' ': surround-enter-insert-mode<ret>'
 ```
 
 ## Surrounding pairs
 
-By default, `surround_pairs` includes the following surrounding pairs:
+By default, surround.kak includes the following surrounding pairs:
 
 ```
-Parenthesis block: ( )
-Braces block: { }
-Brackets block: [ ]
-Angle block: < >
-Double quote string: " "
-Single quote string: ' '
-Grave quote string: ` `
-Double quotation mark: “ ”
-Single quotation mark: ‘ ’
-Double angle quotation mark: « »
-Single angle quotation mark: ‹ ›
+Parenthesis block: b ( )
+Braces block: B { }
+Brackets block: r [ ]
+Angle block: a < >
+Double quote string: Q " "
+Single quote string: q ' '
+Grave quote string: g ` `
+Double quotation mark: <a-Q> “ ”
+Single quotation mark: <a-q> ‘ ’
+Double angle quotation mark: <a-G> « »
+Single angle quotation mark: <a-g> ‹ ›
 ```
 
 See also [auto-pairs.kak] and [manual-indent.kak].

@@ -1,128 +1,113 @@
+hook global ModuleLoaded surround %{
+  surround-init
+}
+
 provide-module surround %{
-  declare-option -docstring 'List of surrounding pairs' str-list surround_pairs ( ) { } [ ] < > '"' '"' "'" "'" ` ` “ ” ‘ ’ « » ‹ ›
-  declare-option -hidden str surround_pairs_to_regex
-  declare-option -docstring 'Commands to execute when entering surround mode' str-list surround_begin ''
-  declare-option -docstring 'Commands to execute when leaving surround mode' str-list surround_end ''
-  define-command surround -params .. -docstring 'Enter surround mode for the whole insert session' %{
-    surround-set-option %arg{@}
-    hook -group surround window InsertChar ' ' surround-space-inserted-or-deleted
-    hook -group surround window InsertDelete ' ' surround-space-inserted-or-deleted
-    # Enter surround mode for the whole insert session.
-    hook -once window ModeChange 'pop:insert:.*' %{
-      remove-hooks window 'surround|surround-.+'
-      evaluate-commands %opt{surround_end}
+
+  # Surround
+  declare-user-mode surround
+
+  define-command -hidden surround-init %{
+    # Insert mode
+    map global surround -docstring 'Enter insert mode' i ': surround-enter-insert-mode<ret>'
+
+    # Editing
+    map global surround -docstring '␣' <space> ': surround-add-space<ret>'
+    map global surround -docstring '␤' <ret> ': surround-add-line<ret>'
+    map global surround -docstring '⌫' <backspace> ': surround-delete<ret>'
+    map global surround -docstring '⌫' <del> ': surround-delete<ret>'
+
+    # Surrounding pairs
+    surround-map-docstring 'Parenthesis block' global b ( )
+    surround-map-docstring 'Braces block' global B { }
+    surround-map-docstring 'Brackets block' global r [ ]
+    surround-map-docstring 'Angle block' global a <lt> <gt>
+    surround-map-docstring 'Double quote string' global Q '"' '"'
+    surround-map-docstring 'Single quote string' global q "'" "'"
+    surround-map-docstring 'Grave quote string' global g ` `
+    surround-map-docstring 'Double quotation mark' global <a-Q> “ ”
+    surround-map-docstring 'Single quotation mark' global <a-q> ‘ ’
+    surround-map-docstring 'Double angle quotation mark' global <a-G> « »
+    surround-map-docstring 'Single angle quotation mark' global <a-g> ‹ ›
+  }
+
+  # Create mappings
+
+  define-command surround-map -params 4 -docstring 'surround-map <scope> [alias] <opening> <closing>: Create surround mappings.' %{
+    surround-map-docstring "%arg{3}…%arg{4}" %arg{@}
+  }
+
+  define-command surround-map-docstring -params 5 -docstring 'surround-map-docstring <docstring> <scope> [alias] <opening> <closing>: Create surround mappings.' %{
+    # Let’s just pretend surrounding pairs can’t be cats.
+    try %{ map %arg{2} surround -docstring %arg{1} %arg{3} ": surround-add %%🐈%arg{4}🐈 %%🐈%arg{5}🐈<ret>" }
+    try %{ map %arg{2} surround -docstring %arg{1} %arg{4} ": surround-add %%🐈%arg{4}🐈 %%🐈%arg{5}🐈<ret>" }
+    try %{ map %arg{2} surround -docstring %arg{1} %arg{5} ": surround-add %%🐈%arg{4}🐈 %%🐈%arg{5}🐈<ret>" }
+  }
+
+  # Enter insert mode
+  define-command surround-enter-insert-mode -docstring 'Enter insert mode' %{
+    execute-keys -save-regs '' 'Z'
+    hook -always -once window ModeChange 'pop:insert:normal' %{
+      hook -always -once window ModeChange 'pop:insert:normal' %{
+        execute-keys z
+        set-register ^
+        echo
+      }
+      execute-keys -with-hooks a
     }
-    evaluate-commands %opt{surround_begin}
     execute-keys -with-hooks i
   }
-  define-command -hidden surround-set-option -params .. %{
-    # Clean hooks
-    remove-hooks window surround-pairs
-    # Generate hooks for surrounding pairs.
-    # Build regex for matching a surrounding pair.
-    evaluate-commands %sh{
-      eval "set -- $kak_quoted_opt_surround_pairs \"\$@\""
-      # Regex
-      regex=''
-      while test $# -ge 2; do
-        opening=$1 closing=$2
-        shift 2
-        # Let’s just pretend surrounding pairs can’t be cats [🐈🐱].
-        printf '
-          hook -group surround-pairs window InsertChar %%🐈\\Q%s\\E🐈 %%🐱surround-opening-inserted %%🐈%s🐈 %%🐈%s🐈🐱
-          hook -group surround-pairs window InsertDelete %%🐈\\Q%s\\E🐈 %%🐱surround-opening-deleted %%🐈%s🐈 %%🐈%s🐈🐱
-        ' \
-          "$opening" "$opening" "$closing" \
-          "$opening" "$opening" "$closing"
-        regex="$regex|(\\A\\Q$opening\\E.+\\Q$closing\\E\\z)"
-      done
-      # Set regex option
-      regex=${regex#|}
-      printf 'set-option window surround_pairs_to_regex %s\n' "$regex"
-    }
+
+  # Add a surrounding pair
+  define-command -hidden surround-add -params 2 %{
+    surround-insert-text %arg{1}
+    surround-append-text %arg{2}
   }
-  # ╭───────────────────────────────────╮
-  # │ What ┊ Initial ┊ Insert ┊ Result  │
-  # ├───────────────────────────────────┤
-  # │  (   ┊  Tchou  ┊ (Tchou ┊ (Tchou) │
-  # │      ┊  ‾‾‾‾‾  ┊  ‾‾‾‾‾ ┊  ‾‾‾‾‾  │
-  # ╰───────────────────────────────────╯
-  #
-  # Insert the closing pair.
-  define-command -hidden surround-opening-inserted -params 2 %{
-    execute-keys -draft 'a' %arg{2}
+
+  define-command -hidden surround-add-space %{
+    surround-add ' ' ' '
   }
-  # ╭──────────────────────────────────╮
-  # │ What ┊ Initial ┊ Delete ┊ Result │
-  # ├──────────────────────────────────┤
-  # │  ⌫   ┊ (Tchou) ┊ Tchou) ┊ Tchou  │
-  # │      ┊  ‾‾‾‾‾  ┊ ‾‾‾‾‾  ┊ ‾‾‾‾‾  │
-  # ╰──────────────────────────────────╯
-  #
-  # Try to delete the closing pair.
-  # The closing pair can be preceded by whitespaces.
-  define-command -hidden surround-opening-deleted -params 2 %{
+
+  define-command -hidden surround-add-line %{
+    execute-keys -draft 'i<ret>'
+    execute-keys -draft 'a<ret>'
+    execute-keys -draft 'K<a-:>J<a-&>'
+    execute-keys -draft '<gt>'
+  }
+
+  # Delete surrounding
+  define-command -hidden surround-delete %{
+    # Delete left surrounding
     try %{
-      execute-keys -draft "<a-:>l<a-k>\Q%arg{2}\E<ret>d"
+      execute-keys -draft '<a-:><a-;>h<a-a><space>d'
     } catch %{
-      execute-keys -draft "<a-:>l<a-i><space>L<a-k>\Q%arg{2}\E<ret>d"
-    } catch ''
-  }
-  # ╭─────────────────────────────────────────────╮
-  # │ What ┊  Initial  ┊   Insert   ┊   Result    │
-  # ├─────────────────────────────────────────────┤
-  # │  ␣   ┊ (␣Tchou␣) ┊ (␣␣Tchou␣) ┊ (␣␣Tchou␣␣) │
-  # │      ┊   ‾‾‾‾‾   ┊    ‾‾‾‾‾   ┊    ‾‾‾‾‾    │
-  # ╰─────────────────────────────────────────────╯
-  #
-  # ╭───────────────────────────────────────────────────╮
-  # │ What ┊    Initial    ┊    Delete    ┊   Result    │
-  # ├───────────────────────────────────────────────────┤
-  # │  ⌫   ┊ (␣␣␣Tchou␣␣␣) ┊ (␣␣Tchou␣␣␣) ┊ (␣␣Tchou␣␣) │
-  # │      ┊     ‾‾‾‾‾     ┊    ‾‾‾‾‾     ┊    ‾‾‾‾‾    │
-  # ╰───────────────────────────────────────────────────╯
-  #
-  # When inserting or deleting a space (always LHS), adjust the RHS if between a surrounding pair.
-  # We evaluate the whole selections in a draft context,
-  # and keep selections surrounded by a pair.
-  # Finally, we adjust the padding on the remaining selections.
-  define-command -hidden surround-space-inserted-or-deleted %{
-    try %{
-      evaluate-commands -draft %{
-        evaluate-commands -itersel %{
-          evaluate-commands -draft %{
-            surround-select-surrounding-content
-            surround-keep-surrounding-pair
-          }
-          surround-pad-surrounding-pair
-        }
-      }
+      execute-keys -draft 'i<backspace>'
     }
-  }
-  # Initial position: X␣␣[Tchou]␣␣␣Y
-  # Result: [X␣␣Tchou␣␣␣Y]
-  define-command -hidden surround-select-surrounding-content %{
-    execute-keys '<a-?>\H<ret><a-:>?\H<ret>'
-  }
-  # Initial position: [X␣␣Tchou␣␣␣Y]
-  # Result: [✓] if a pair, [✗] if not
-  define-command -hidden surround-keep-surrounding-pair %{
-    evaluate-commands -save-regs '/' %{
-      set-register / %opt{surround_pairs_to_regex}
-      execute-keys '<a-k><ret>'
-    }
-  }
-  # Initial position: (␣␣[Tchou]␣␣␣)
-  # Result: (␣␣[Tchou]␣␣)
-  define-command -hidden surround-pad-surrounding-pair %{
+    # Delete right surrounding
     try %{
-      # Try to select LHS spaces and copy padding to the RHS.
-      # If LHS selection succeeds, we append a space to the RHS to ensure <a-i><space> does not fail.
-      execute-keys -draft 'Zh<a-i><space>yza<space><esc><a-i><space>R'
+      execute-keys -draft '<a-:>l<a-a><space>d'
     } catch %{
-      # No LHS space, remove RHS spaces.
-      execute-keys -draft '<a-:>l<a-i><space>d'
-    } catch ''
+      execute-keys -draft 'a<del>'
+    }
+  }
+
+  # Generics ───────────────────────────────────────────────────────────────────
+
+  define-command -hidden surround-insert-text -params 1 %{
+    surround-paste-text 'P' %arg{1}
+  }
+
+  define-command -hidden surround-append-text -params 1 %{
+    surround-paste-text 'p' %arg{1}
+  }
+
+  define-command -hidden surround-paste-text -params 2 %{
+    evaluate-commands -save-regs '"' %{
+      # Paste using the specified method
+      # The command (R, <a-P> and <a-p>) selects inserted text
+      set-register '"' %arg{2}
+      execute-keys %arg{1}
+    }
   }
 }
 
