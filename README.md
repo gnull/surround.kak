@@ -35,6 +35,8 @@ Double quotation mark: <a-Q> “ ”
 Single quotation mark: <a-q> ‘ ’
 Double angle quotation mark: <a-G> « »
 Single angle quotation mark: <a-g> ‹ ›
+Emphasis: _ _
+Strong: ** **
 ```
 
 surround.kak has also support for free input on <kbd>i</kbd> and tags on <kbd>t</kbd>.

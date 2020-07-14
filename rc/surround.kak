@@ -32,6 +32,10 @@ provide-module surround %{
     surround-map-docstring 'Single quotation mark' global <a-q> ‘ ’
     surround-map-docstring 'Double angle quotation mark' global <a-G> « »
     surround-map-docstring 'Single angle quotation mark' global <a-g> ‹ ›
+
+    # Support for _emphasis_ and **strong** tagging
+    map global surround -docstring 'Emphasis' '_' ': surround-add _ _<ret>'
+    map global surround -docstring 'Strong' '*' ': surround-add ** **<ret>'
   }
 
   # Create mappings
