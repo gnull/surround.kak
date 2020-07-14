@@ -37,6 +37,8 @@ Double angle quotation mark: <a-G> « »
 Single angle quotation mark: <a-g> ‹ ›
 ```
 
+surround.kak has also support for free input on <kbd>i</kbd> and tags on <kbd>t</kbd>.
+
 See also [auto-pairs.kak] and [manual-indent.kak].
 
 [Kakoune]: https://kakoune.org
