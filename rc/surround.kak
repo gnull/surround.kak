@@ -11,10 +11,8 @@ provide-module surround %{
     # Insert mode
     map global surround -docstring 'Enter insert mode' i ': surround-enter-insert-mode<ret>'
 
-    # Mirror prompt
+    # Prompts
     map global surround -docstring 'Prompt for a pair to mirror' m ': surround-mirror-prompt<ret>'
-
-    # Tag prompt
     map global surround -docstring 'Prompt for a tag' t ': surround-tag-prompt<ret>'
 
     # Editing
@@ -68,6 +66,7 @@ provide-module surround %{
     execute-keys -with-hooks i
   }
 
+  # Prompts
   # Mirror prompt
   define-command surround-mirror-prompt -docstring 'Prompt for a pair to mirror' %{
     prompt surround-mirror: %{
