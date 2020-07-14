@@ -1,6 +1,6 @@
 # surround.kak
 
-Surround pairs as-you-type for [Kakoune].
+Surround mode for [Kakoune].
 
 ## Installation
 
