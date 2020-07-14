@@ -39,7 +39,7 @@ Emphasis: _ _
 Strong: ** **
 ```
 
-surround.kak has also support for free input on <kbd>i</kbd> and tags on <kbd>t</kbd>.
+surround.kak has also support for free input on <kbd>i</kbd> and <kbd>m</kbd> (mirror), and tags on <kbd>t</kbd>.
 
 See also [auto-pairs.kak] and [manual-indent.kak].
 
