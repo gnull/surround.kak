@@ -11,6 +11,9 @@ provide-module surround %{
     # Insert mode
     map global surround -docstring 'Enter insert mode' i ': surround-enter-insert-mode<ret>'
 
+    # Tag prompt
+    map global surround -docstring 'Prompt for a tag' t ': surround-tag-prompt<ret>'
+
     # Editing
     map global surround -docstring '␣' <space> ': surround-add-space<ret>'
     map global surround -docstring '␤' <ret> ': surround-add-line<ret>'
@@ -56,6 +59,13 @@ provide-module surround %{
       execute-keys -with-hooks a
     }
     execute-keys -with-hooks i
+  }
+
+  # Tag prompt
+  define-command surround-tag-prompt -docstring 'Prompt for a tag' %{
+    prompt surround-tag: %{
+      surround-add "<%val{text}>" "</%val{text}>"
+    }
   }
 
   # Add a surrounding pair
