@@ -13,6 +13,7 @@ provide-module surround %{
 
     # Prompts
     map global surround -docstring 'Prompt for a pair to mirror' m ': surround-mirror-prompt<ret>'
+    map global surround -docstring 'Prompt for a key to mirror' M ': surround-mirror-on-key<ret>'
     map global surround -docstring 'Prompt for a tag' t ': surround-tag-prompt<ret>'
 
     # Editing
@@ -74,6 +75,11 @@ provide-module surround %{
   define-command surround-mirror-prompt -docstring 'Prompt for a pair to mirror' %{
     prompt surround-mirror: %{
       surround-add %val{text} %val{text}
+    }
+  }
+  define-command surround-mirror-on-key -docstring 'Prompt for a key to mirror' %{
+    on-key %{
+      surround-add %val{key} %val{key}
     }
   }
 
