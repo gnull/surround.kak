@@ -37,6 +37,9 @@ provide-module surround %{
     # Support for _emphasis_ and **strong** tagging
     map global surround -docstring 'Emphasis' '_' ': surround-add _ _<ret>'
     map global surround -docstring 'Strong' '*' ': surround-add ** **<ret>'
+
+    # Regular expression
+    map global surround -docstring 'Regular expression' '/' ': surround-add / /<ret>'
   }
 
   # Create mappings
