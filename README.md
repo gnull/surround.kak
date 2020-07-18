@@ -15,8 +15,12 @@ Add [`surround.kak`](rc/surround.kak) to your autoload or source it manually.
 
 ``` kak
 # Quote
-map global normal "'" ': enter-user-mode surround<ret>'
-map global normal '"' ': surround-enter-insert-mode<ret>'
+map global normal q ': enter-user-mode surround<ret>'
+map global normal Q ': surround-enter-insert-mode<ret>'
+
+# Move macros to ^
+map global normal ^ q
+map global normal <a-^> Q
 ```
 
 ## Surrounding pairs
