@@ -14,7 +14,7 @@ Add [`surround.kak`](rc/surround.kak) to your autoload or source it manually.
 ## Configuration
 
 ``` kak
-# Quote
+# Quoting
 map global normal q ': enter-user-mode surround<ret>'
 map global normal Q ': surround-enter-insert-mode<ret>'
 
