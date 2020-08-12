@@ -103,7 +103,8 @@ provide-module surround %{
   define-command -hidden surround-add-line %{
     execute-keys -draft 'i<ret>'
     execute-keys -draft 'a<ret>'
-    execute-keys -draft 'K<a-:>J<a-&>'
+    # Should work when selecting multiple lines
+    execute-keys -draft '<a-:><a-;>K<a-:>J<a-&>'
     execute-keys -draft '<gt>'
   }
 
