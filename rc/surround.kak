@@ -9,18 +9,18 @@ provide-module surround %{
 
   define-command -hidden surround-init %{
     # Insert mode
-    map global surround -docstring 'Enter insert mode' i ': surround-enter-insert-mode<ret>'
+    map -docstring 'Enter insert mode' global surround i ': surround-enter-insert-mode<ret>'
 
     # Prompts
-    map global surround -docstring 'Prompt for a pair to mirror' m ': surround-mirror-prompt<ret>'
-    map global surround -docstring 'Prompt for a key to mirror' M ': surround-mirror-on-key<ret>'
-    map global surround -docstring 'Prompt for a tag' t ': surround-tag-prompt<ret>'
+    map -docstring 'Prompt for a pair to mirror' global surround m ': surround-mirror-prompt<ret>'
+    map -docstring 'Prompt for a key to mirror' global surround M ': surround-mirror-on-key<ret>'
+    map -docstring 'Prompt for a tag' global surround t ': surround-tag-prompt<ret>'
 
     # Editing
-    map global surround -docstring '␣' <space> ': surround-add-space<ret>'
-    map global surround -docstring '␤' <ret> ': surround-add-line<ret>'
-    map global surround -docstring '⌫' <backspace> ': surround-delete<ret>'
-    map global surround -docstring '⌫' <del> ': surround-delete<ret>'
+    map -docstring '␣' global surround <space> ': surround-add-space<ret>'
+    map -docstring '␤' global surround <ret> ': surround-add-line<ret>'
+    map -docstring '⌫' global surround <backspace> ': surround-delete<ret>'
+    map -docstring '⌫' global surround <del> ': surround-delete<ret>'
 
     # Surrounding pairs
     surround-map-docstring 'Parenthesis block' global b ( )
@@ -36,11 +36,11 @@ provide-module surround %{
     surround-map-docstring 'Single angle quotation mark' global <a-g> ‹ ›
 
     # Support for _emphasis_ and **strong** tagging
-    map global surround -docstring 'Emphasis' '_' ': surround-add _ _<ret>'
-    map global surround -docstring 'Strong' '*' ': surround-add ** **<ret>'
+    map -docstring 'Emphasis' global surround '_' ': surround-add _ _<ret>'
+    map -docstring 'Strong' global surround '*' ': surround-add ** **<ret>'
 
     # Regular expression
-    map global surround -docstring 'Regular expression' '/' ': surround-add / /<ret>'
+    map -docstring 'Regular expression' global surround '/' ': surround-add / /<ret>'
   }
 
   # Create mappings
@@ -51,9 +51,9 @@ provide-module surround %{
 
   define-command surround-map-docstring -params 5 -docstring 'surround-map-docstring <docstring> <scope> [alias] <opening> <closing>: Create surround mappings.' %{
     # Let’s just pretend surrounding pairs can’t be cats.
-    try %{ map %arg{2} surround -docstring %arg{1} %arg{3} ": surround-add %%🐈%arg{4}🐈 %%🐈%arg{5}🐈<ret>" }
-    try %{ map %arg{2} surround -docstring %arg{1} %arg{4} ": surround-add %%🐈%arg{4}🐈 %%🐈%arg{5}🐈<ret>" }
-    try %{ map %arg{2} surround -docstring %arg{1} %arg{5} ": surround-add %%🐈%arg{4}🐈 %%🐈%arg{5}🐈<ret>" }
+    try %{ map -docstring %arg{1} %arg{2} surround %arg{3} ": surround-add %%🐈%arg{4}🐈 %%🐈%arg{5}🐈<ret>" }
+    try %{ map -docstring %arg{1} %arg{2} surround %arg{4} ": surround-add %%🐈%arg{4}🐈 %%🐈%arg{5}🐈<ret>" }
+    try %{ map -docstring %arg{1} %arg{2} surround %arg{5} ": surround-add %%🐈%arg{4}🐈 %%🐈%arg{5}🐈<ret>" }
   }
 
   # Enter insert mode
