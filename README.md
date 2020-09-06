@@ -6,6 +6,10 @@ Surround mode for [Kakoune].
 
 Add [`surround.kak`](rc/surround.kak) to your autoload or source it manually.
 
+``` kak
+require-module surround
+```
+
 ## Usage
 
 - Enter surround mode with `enter-user-mode surround`.

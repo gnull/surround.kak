@@ -143,5 +143,3 @@ provide-module surround %{
     }
   }
 }
-
-require-module surround
