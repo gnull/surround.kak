@@ -2,6 +2,8 @@
 
 Surround mode for [Kakoune].
 
+[Kakoune]: https://kakoune.org
+
 ## Installation
 
 Add [`surround.kak`](rc/surround.kak) to your autoload or source it manually.
@@ -52,6 +54,5 @@ surround.kak has also support for free input on <kbd>i</kbd> and <kbd>m</kbd> (m
 
 See also [auto-pairs.kak] and [manual-indent.kak].
 
-[Kakoune]: https://kakoune.org
 [auto-pairs.kak]: https://github.com/alexherbo2/auto-pairs.kak
 [manual-indent.kak]: https://github.com/alexherbo2/manual-indent.kak
