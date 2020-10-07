@@ -19,12 +19,12 @@ require-module surround
 
 ``` kak
 # Quoting
-map global normal q ': enter-user-mode surround<ret>'
-map global normal Q ': surround-enter-insert-mode<ret>'
+map -docstring 'Surround' global normal q ': enter-user-mode surround<ret>'
+map -docstring 'Surround insert' global normal Q ': surround-enter-insert-mode<ret>'
 
 # Move macros to ^
-map global normal ^ q
-map global normal <a-^> Q
+map -docstring 'Play macro' global normal ^ q
+map -docstring 'Record macro' global normal <a-^> Q
 ```
 
 ## Surrounding pairs
